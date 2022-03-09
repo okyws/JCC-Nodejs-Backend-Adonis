@@ -1,10 +1,4 @@
-var funcLib = require('./lib/funcLib');
-
-var soal1 = funcLib.soal1;
-var soal2 = funcLib.soal2;
-var soal3 = funcLib.soal3;
-var soal4 = funcLib.soal4;
-var soal5 = funcLib.soal5;
+const { soal1, soal2, soal3, soal4, soal5 } = require('./lib/funcLib');
 
 var args = process.argv;
 

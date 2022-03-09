@@ -1,9 +1,4 @@
-const { kenalan } = require('./lib/funcLib');
-var funcLib = require('./lib/funcLib')
-
-var teriak = funcLib.teriak;
-var kalikan = funcLib.kalikan;
-var introduce = funcLib.introduce;
+const { teriak, kalikan, kenalan } = require('./lib/funcLib');
 
 var args = process.argv;
 
