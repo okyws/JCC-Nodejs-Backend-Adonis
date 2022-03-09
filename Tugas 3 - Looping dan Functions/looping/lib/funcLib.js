@@ -81,7 +81,7 @@ function soal5(dimensi) {
               process.stdout.write(" ");
           }
           else {
-              process.stdout.write("*");
+              process.stdout.write("#");
           }
       }
       console.log();
