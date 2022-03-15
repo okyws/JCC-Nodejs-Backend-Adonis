@@ -1,0 +1,19 @@
+{
+  "name": "tugas-7---berlatih-class",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel": "./node_modules/.bin/babel",
+    "dev": "npm run babel src -- --out-dir dist --watch"
+  },
+  "keywords": [],
+  "author": "Oky WS",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.7",
+    "@babel/preset-env": "^7.16.11"
+  }
+}
