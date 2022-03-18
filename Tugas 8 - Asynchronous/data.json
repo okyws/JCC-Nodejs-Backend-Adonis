@@ -1,15 +1,1 @@
-[ 
-  { 
-    "name": "Bondra", 
-    "password": "123456",
-    "role": "admin",
-    "isLogin": true
-  }, 
-  {
-    "name": "Iqbal",
-    "password": "123456",
-    "role": "trainer",
-    "isLogin": false,
-    "students": [ {"name": "Regy"} ]
-   }
-]
+[{"_name":"oky","_password":"123","_role":"admin","_isLogin":true},{"_name":"wahyu","_password":"123","_role":"trainer","_isLogin":false,"_students":[{"name":"okyws"},{"name":"oky wahyu"}]}]
