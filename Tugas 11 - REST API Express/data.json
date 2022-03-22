@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "name": "ows",
+      "role": "admin",
+      "password": "ows",
+      "isLogin": true,
+      "students": []
+    },
+    {
+      "name": "oky",
+      "role": "trainer",
+      "password": "oky",
+      "isLogin": false,
+      "students": []
+    },
+    {
+      "name": "wahyu",
+      "role": "trainer",
+      "password": "wahyu",
+      "isLogin": false,
+      "students": []
+    }
+  ]
+}
