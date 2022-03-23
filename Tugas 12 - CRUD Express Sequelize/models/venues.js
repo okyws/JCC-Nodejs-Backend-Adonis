@@ -14,9 +14,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Venues.init({
-    name: DataTypes.CHAR,
-    address: DataTypes.CHAR,
-    phone: DataTypes.CHAR
+    name: DataTypes.STRING(191),
+    address: DataTypes.STRING(255),
+    phone: DataTypes.STRING(45)
   }, {
     sequelize,
     modelName: 'Venues',
