@@ -37,13 +37,12 @@ export default class VenueCreateValidator {
       rules.mobile({
         /**
          * jika menggunakan strict maka harus menambahkan '+' sebelum kode negara  
-         * contoh : +6280000000000
+         * contoh : +6281200000000
          * 
          * jika tida menambahkan '+' sebelum kode negara maka akan error
          * */
         locales: ['id-ID'],
         strict: true,
-        
       }),
       rules.maxLength(15),
     ]),
@@ -61,13 +60,13 @@ export default class VenueCreateValidator {
    *
    */
   public messages = {
-    'name.required': 'Nama harus diisi!',
-    'name.alpha': 'Nama tidak boleh mengandung simbol dan angka',
-    'name.maxLength': 'Nama tidak boleh lebih dari 20 huruf',
+    'name.required': 'Nama Venue harus diisi!',
+    'name.alpha': 'Nama Venue tidak boleh mengandung simbol dan angka',
+    'name.maxLength': 'Nama Venue tidak boleh lebih dari 20 huruf',
     'address.required': 'Alamat harus diisi!',
     'address.maxLength': 'Alamat tidak boleh lebih dari 100',
     'phone.required': 'Telepon harus diisi!',
     'phone.mobile': 'Telepon harus format negara Indonesia!',
-    'phone.maxLength': 'Telepon tidak boleh lebih dari 14 digit',
+    'phone.maxLength': 'Telepon tidak boleh lebih dari 15 digit',
   };
 }

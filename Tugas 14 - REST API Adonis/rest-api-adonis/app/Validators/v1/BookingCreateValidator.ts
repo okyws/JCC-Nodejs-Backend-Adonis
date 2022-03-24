@@ -62,7 +62,7 @@ export default class BookingCreateValidator {
     'name.alpha': 'Nama tidak boleh mengandung simbol dan angka',
     'name.maxLength': 'Nama tidak boleh lebih dari 20 huruf',
     'nameVenue.required': 'Nama Venue harus diisi!',
-    'nameVenue.maxLength': 'Nama tidak boleh lebih dari 20 huruf',
+    'nameVenue.maxLength': 'Nama Venue tidak boleh lebih dari 20 huruf',
     'playDate.required': 'Tanggal Main harus diisi!',
     'playDate.after': 'Tanggal Main minimal 1 hari sebelum!',
     'playDate.date.format': 'Format tanggal dan waktu yang anda masukan salah!',
