@@ -6,13 +6,12 @@ export default class VenuesController {
   public async index({ response }: HttpContextContract) {
     try {
       // ambil semua data
-      let venues = await Database.query().select("*").from("venues");
+      let venue = await Database.query().select("*").from("venues");
       // untuk mengambil data tertentu
       // let venues = await Database.query().select('id', 'name', 'address', 'phone').from('venues')
-
       response
         .status(200)
-        .json({ message: "Berhasil mengambil semua data venue", data: venues });
+        .json({ message: "Berhasil mengambil semua data venue", data: venue });
     } catch (error) {
       response.badRequest({ erorrs: error.messages });
     }
@@ -21,17 +20,20 @@ export default class VenuesController {
   public async store({ request, response }: HttpContextContract) {
     try {
       await request.validate(VenueCreateValidator);
-      let newVenue = await Database.table("venues").insert({
+      let venue = await Database.table("venues").insert({
         name: request.input("name"),
         address: request.input("address"),
         phone: request.input("phone"),
       });
       return response.created({
         message: "Venue berhasil dibuat!",
-        newId: newVenue,
+        data: venue,
       });
     } catch (error) {
-      response.badRequest({ erorrs: error.messages, message: "gagal membuat Venue!" });
+      response.badRequest({
+        erorrs: error.messages,
+        message: "gagal membuat Venue!",
+      });
     }
   }
 
@@ -41,7 +43,7 @@ export default class VenuesController {
         .where("id", params.id)
         .select("id", "name", "address", "phone")
         .firstOrFail();
-      response.created({
+      response.ok({
         message: "Berhasil ambil data Venue berdasarkan id!",
         data: venue,
       });
@@ -54,14 +56,14 @@ export default class VenuesController {
     await request.validate(VenueCreateValidator);
     try {
       let id = params.id;
-      await Database.from("venues")
+      let venue = await Database.from("venues")
         .where("id", id)
         .update({
           name: request.input("name"),
           address: request.input("address"),
           phone: request.input("phone"),
         });
-      response.ok({ message: "data berhasil di update!" });
+      response.ok({ message: "data berhasil di update!", data: venue });
     } catch (error) {
       response.badRequest({ message: "gagal update data!" });
     }
@@ -73,7 +75,7 @@ export default class VenuesController {
       await Database.from("venues").where("id", id).delete();
       response.ok({ message: "data berhasil di hapus!" });
     } catch (error) {
-      response.notFound({
+      response.badRequest({
         erorrs: error.messages,
         message: "gagal hapus data!",
       });
