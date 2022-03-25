@@ -1,7 +1,7 @@
 import { rules, schema } from "@ioc:Adonis/Core/Validator";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 
-export default class VenueCreateValidator {
+export default class FieldCreateValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -27,22 +27,12 @@ export default class VenueCreateValidator {
     name: schema.string({}, [
       rules.maxLength(20),
     ]),
-    address: schema.string({}, [
-      rules.maxLength(100),
-    ]),
-    phone: schema.string({}, [
-      rules.mobile({
-        /**
-         * jika menggunakan strict maka harus menambahkan '+' sebelum kode negara  
-         * contoh : +6281200000000
-         * 
-         * jika tida menambahkan '+' sebelum kode negara maka akan error
-         * */
-        locales: ['id-ID'],
-        strict: true,
-      }),
-      rules.maxLength(15),
-    ]),
+    type: schema.enum(
+      ['futsal', 'mini soccer', 'basketball'] as const
+    ),
+    venue_id: schema.number([
+      rules.unsigned(),
+    ])
   });
 
   /**
@@ -57,12 +47,10 @@ export default class VenueCreateValidator {
    *
    */
   public messages = {
-    'name.required': 'Nama Venue harus diisi!',
-    'name.maxLength': 'Nama Venue tidak boleh lebih dari 20 huruf',
-    'address.required': 'Alamat harus diisi!',
-    'address.maxLength': 'Alamat tidak boleh lebih dari 100',
-    'phone.required': 'Telepon harus diisi!',
-    'phone.mobile': 'Telepon harus format negara Indonesia!',
-    'phone.maxLength': 'Telepon tidak boleh lebih dari 15 digit',
+    'name.required': 'Nama harus diisi!',
+    'name.maxLength': 'Nama tidak boleh lebih dari 20 huruf',
+    'type.required': 'Type harus diisi!',
+    'venue_id.required': 'Id Venue harus diisi!',
+    'venue_id.unsigned': 'Id Venue harus bilangan positif'
   };
 }

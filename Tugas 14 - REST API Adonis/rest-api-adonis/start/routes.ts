@@ -24,5 +24,14 @@ Route.get('/', async () => {
   return { hello: 'world' }
 });
 
-Route.post('/venue', 'v1/VenuesController.saveVenue').as('Register Venue');
+// cara simpel untuk route
+Route.resource('/venue', 'v1/VenuesController').apiOnly();
+Route.resource('/venue.fields', 'v1/FieldsController').apiOnly();
+
+// jika route 1 per 1
 Route.post('/booking', 'v1/BookingsController.saveBooking').as('add Booking');
+// Route.post('/venue', 'v1/VenuesController.store').as('venue.store');
+// Route.get('/venue', 'v1/VenuesController.index').as('venue.index');
+// Route.get('/venue/:id', 'v1/VenuesController.show').as('venue.show');
+// Route.put('/venue/:id', 'v1/VenuesController.update').as('venue.update');
+// Route.delete('/venue/:id', 'v1/VenuesController.delete').as('venue.delete');
