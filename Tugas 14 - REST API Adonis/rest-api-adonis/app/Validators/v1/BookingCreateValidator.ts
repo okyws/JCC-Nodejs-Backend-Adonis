@@ -65,6 +65,6 @@ export default class BookingCreateValidator {
     'nameVenue.maxLength': 'Nama Venue tidak boleh lebih dari 20 huruf',
     'playDate.required': 'Tanggal Main harus diisi!',
     'playDate.after': 'Tanggal Main minimal 1 hari sebelum!',
-    'playDate.date.format': 'Format tanggal dan waktu yang anda masukan salah!',
+    'playDate.date.format': 'Format tanggal dan waktu yang anda masukan salah! (format: "yyyy-MM-dd HH:mm:ss")',
   };
 }
