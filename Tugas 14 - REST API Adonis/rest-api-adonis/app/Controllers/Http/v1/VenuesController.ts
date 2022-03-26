@@ -18,8 +18,8 @@ export default class VenuesController {
   }
 
   public async store({ request, response }: HttpContextContract) {
+    await request.validate(VenueCreateValidator);
     try {
-      await request.validate(VenueCreateValidator);
       let venue = await Database.table("venues").insert({
         name: request.input("name"),
         address: request.input("address"),
@@ -63,7 +63,11 @@ export default class VenuesController {
           address: request.input("address"),
           phone: request.input("phone"),
         });
-      response.ok({ message: "data berhasil di update!", data: venue });
+      if (venue) {
+        response.ok({ message: "data berhasil di update!", data: venue });
+      } else {
+        response.status(404).json({ message: "Venue tidak ditemukan!" });
+      }
     } catch (error) {
       response.badRequest({ message: "gagal update data!" });
     }
@@ -72,8 +76,12 @@ export default class VenuesController {
   public async destroy({ response, params }: HttpContextContract) {
     try {
       let id = params.id;
-      await Database.from("venues").where("id", id).delete();
-      response.ok({ message: "data berhasil di hapus!" });
+      let venue = await Database.from("venues").where("id", id).delete();
+      if (venue) {
+        response.ok({ message: "data Venue berhasil di hapus!", data: venue });
+      } else {
+        response.status(404).json({ message: "Venue tidak ditemukan!" });
+      }
     } catch (error) {
       response.badRequest({
         erorrs: error.messages,
