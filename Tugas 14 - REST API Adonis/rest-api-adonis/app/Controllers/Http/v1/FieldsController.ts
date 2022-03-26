@@ -23,13 +23,14 @@ export default class FieldsController {
     }
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, params }: HttpContextContract) {
     try {
+      let venue_id = params.venue_id
       await request.validate(FieldCreateValidator);
       let field = await Database.table("fields").insert({
         name: request.input("name"),
         type: request.input("type"),
-        venue_id: request.input("venue_id"),
+        venue_id: request.input("venue_id", venue_id),
       });
       response.created({
         message: "Arena berhasil dibuat!",
@@ -46,9 +47,9 @@ export default class FieldsController {
   public async show({ response, params }: HttpContextContract) {
     try {
       let field = await Database.from("fields")
-        .where("venue_id", params.venue_id)
-        .select("id", "name", "type", "venue_id")
         .where("id", params.id)
+        .andWhere("venue_id", params.venue_id)
+        .select("id", "name", "type", "venue_id")
         .firstOrFail();
       response.ok({
         message: "Berhasil ambil data Arena berdasarkan id!",
@@ -66,8 +67,10 @@ export default class FieldsController {
     await request.validate(FieldCreateValidator);
     try {
       let id = params.id;
+      let venue_id = params.venue_id;
       let field = await Database.from("fields")
         .where("id", id)
+        .andWhere("venue_id", venue_id)
         .update({
           name: request.input("name"),
           type: request.input("type"),
@@ -85,7 +88,11 @@ export default class FieldsController {
   public async destroy({ response, params }: HttpContextContract) {
     try {
       let id = params.id;
-      await Database.from("fields").where("id", id).delete();
+      let venue_id = params.venue_id;
+      await Database.from("fields")
+        .where("id", id)
+        .andWhere("venue_id", venue_id)
+        .delete();
       response.ok({ message: "Arena berhasil di hapus!" });
     } catch (error) {
       response.badRequest({
