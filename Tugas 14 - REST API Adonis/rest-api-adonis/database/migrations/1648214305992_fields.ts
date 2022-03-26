@@ -11,21 +11,19 @@ export default class Fields extends BaseSchema {
         .enum("type", ["futsal", "mini soccer", "basketball"])
         .notNullable()
         .defaultTo("futsal");
-      table.integer("venue_id").notNullable().unsigned();
+      table
+        .integer("venue_id")
+        .notNullable()
+        .unsigned()
+        .references("id")
+        .inTable("venues")
+        .onDelete("CASCADE");
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
       // table.timestamp("created_at", { precision: 6 });
       // table.timestamp("updated_at", { precision: 6 });
       table.timestamps(true, true);
-    });
-
-    this.schema.alterTable(this.tableName, (table) => {
-      table
-        .foreign("venue_id")
-        .references("id")
-        .inTable("venues")
-        .onDelete("CASCADE");
     });
   }
 

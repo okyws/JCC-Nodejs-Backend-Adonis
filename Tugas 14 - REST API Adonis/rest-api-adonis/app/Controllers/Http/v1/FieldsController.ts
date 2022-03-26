@@ -3,10 +3,13 @@ import FieldCreateValidator from "App/Validators/v1/FieldCreateValidator";
 import Database from "@ioc:Adonis/Lucid/Database";
 
 export default class FieldsController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ response, params }: HttpContextContract) {
     try {
       // ambil semua data
-      let field = await Database.query().select("*").from("fields");
+      let field = await Database.query()
+        .select("*")
+        .from("fields")
+        .where("venue_id", params.venue_id);
       // untuk mengambil data tertentu
       // let venues = await Database.query().select('id', 'name', 'address', 'phone').from('venues')
       response
@@ -43,8 +46,9 @@ export default class FieldsController {
   public async show({ response, params }: HttpContextContract) {
     try {
       let field = await Database.from("fields")
-        .where("id", params.id)
+        .where("venue_id", params.venue_id)
         .select("id", "name", "type", "venue_id")
+        .where("id", params.id)
         .firstOrFail();
       response.ok({
         message: "Berhasil ambil data Arena berdasarkan id!",
