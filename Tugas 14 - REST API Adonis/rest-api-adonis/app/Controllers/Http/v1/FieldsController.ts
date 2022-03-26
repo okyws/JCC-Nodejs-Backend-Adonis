@@ -3,42 +3,59 @@ import FieldCreateValidator from "App/Validators/v1/FieldCreateValidator";
 import Database from "@ioc:Adonis/Lucid/Database";
 
 export default class FieldsController {
-  public async index({ response, params }: HttpContextContract) {
+  public async index({ request, response, params }: HttpContextContract) {
     try {
-      // ambil semua data
-      let field = await Database.query()
-        .select("*")
-        .from("fields")
-        .where("venue_id", params.venue_id);
-      // untuk mengambil data tertentu
-      // let venues = await Database.query().select('id', 'name', 'address', 'phone').from('venues')
-      response
-        .status(200)
-        .json({ message: "Berhasil mengambil semua data Arena", data: field });
+      let venue_id = params.venue_id;
+      let type = request.qs().type;
+      let field = await Database.from("fields")
+        .where("venue_id", venue_id)
+        .firstOrFail();
+      if (field) {
+        let field = await Database.query()
+          .select("*")
+          .from("fields")
+          .where("venue_id", venue_id);
+        response.status(200).json({
+          message: "Berhasil mengambil semua data Arena",
+          data: field,
+        });
+      }
+      if (type) {
+        let type = request.qs().type;
+        let dataFiltered = await Database.from("fields")
+          .select("*")
+          .andWhere("type", type)
+          .where("venue_id", venue_id);
+        response
+          .status(200)
+          .json({ message: "success filtered data", dataFiltered });
+      }
     } catch (error) {
       response.badRequest({
-        erorrs: error.messages,
+        erorrs: error.message,
         message: "gagal memuat data Arena!",
       });
     }
   }
 
   public async store({ request, response, params }: HttpContextContract) {
+    await request.validate(FieldCreateValidator);
     try {
-      let venue_id = params.venue_id
-      await request.validate(FieldCreateValidator);
-      let field = await Database.table("fields").insert({
-        name: request.input("name"),
-        type: request.input("type"),
-        venue_id: request.input("venue_id", venue_id),
-      });
-      response.created({
-        message: "Arena berhasil dibuat!",
-        data: field,
-      });
+      let venue_id = params.venue_id;
+      let field = await Database.from("fields")
+        .where("venue_id", venue_id)
+        .firstOrFail();
+      if (field) {
+        let field = await Database.table("fields").insert({
+          name: request.input("name"),
+          type: request.input("type"),
+          venue_id: request.input("venue_id"),
+        });
+        response.ok({ message: "Arena berhasil di dibuat!", data: field });
+      }
     } catch (error) {
       response.badRequest({
-        erorrs: error.messages,
+        // erorrs: error.message,
         message: "gagal membuat Arena!",
       });
     }
@@ -57,7 +74,7 @@ export default class FieldsController {
       });
     } catch (error) {
       response.notFound({
-        erorrs: error.messages,
+        erorrs: error.message,
         message: "Arena tidak ditemukan!",
       });
     }
@@ -76,10 +93,14 @@ export default class FieldsController {
           type: request.input("type"),
           venue_id: request.input("venue_id"),
         });
-      response.ok({ message: "Arena berhasil di update!", data: field });
+      if (field) {
+        response.ok({ message: "Arena berhasil di update!", data: field });
+      } else {
+        response.status(404).json({ message: "Arena tidak ditemukan!" });
+      }
     } catch (error) {
       response.badRequest({
-        erorrs: error.messages,
+        erorrs: error.message,
         message: "gagal update Arena!",
       });
     }
@@ -89,11 +110,15 @@ export default class FieldsController {
     try {
       let id = params.id;
       let venue_id = params.venue_id;
-      await Database.from("fields")
+      let field = await Database.from("fields")
         .where("id", id)
         .andWhere("venue_id", venue_id)
         .delete();
-      response.ok({ message: "Arena berhasil di hapus!" });
+      if (field) {
+        response.ok({ message: "Arena berhasil di hapus!", data: field });
+      } else {
+        response.status(404).json({ message: "Arena tidak ditemukan!" });
+      }
     } catch (error) {
       response.badRequest({
         erorrs: error.messages,
