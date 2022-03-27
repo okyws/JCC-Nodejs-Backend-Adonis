@@ -8,7 +8,7 @@ export default class Movies extends BaseSchema {
       table.increments("id");
       table.string("title").notNullable();
       table.text("resume").notNullable();
-      table.dateTime("release_date", { useTz: true });
+      table.date("release_date").notNullable();
       table
         .integer("genre_id")
         .notNullable()

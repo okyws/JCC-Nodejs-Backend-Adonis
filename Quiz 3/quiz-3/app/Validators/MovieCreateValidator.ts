@@ -1,5 +1,5 @@
-import { schema } from '@ioc:Adonis/Core/Validator'
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { rules, schema } from "@ioc:Adonis/Core/Validator";
+import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 
 export default class MovieCreateValidator {
   constructor(protected ctx: HttpContextContract) {}
@@ -23,7 +23,14 @@ export default class MovieCreateValidator {
    *     ])
    *    ```
    */
-  public schema = schema.create({})
+  public schema = schema.create({
+    title: schema.string({}, [rules.maxLength(30)]),
+    resume: schema.string({}, [rules.maxLength(200)]),
+    release_date: schema.date({
+      format: "yyyy-MM-dd",
+    }),
+    genre_id: schema.number([rules.unsigned()]),
+  });
 
   /**
    * Custom messages for validation failures. You can make use of dot notation `(.)`
@@ -36,5 +43,15 @@ export default class MovieCreateValidator {
    * }
    *
    */
-  public messages = {}
+  public messages = {
+    "title.required": "Title harus diisi!",
+    "title.maxLength": "Title tidak boleh lebih dari 30 huruf",
+    "resume.required": "Resume harus diisi!",
+    "resume.maxLength": "Resume tidak boleh lebih dari 200 huruf",
+    "release_date.required": "Tanggal rilis harus diisi! (yyyy-MM-dd)",
+    "release_date.format": "Tanggal harus sesuai format <yyyy-MM-dd>",
+    "genre_id.required": "Genre harus di isi!",
+    "genre_id.number": "Genre id harus angka",
+    "genre_id.unsigned": "Genre id harus bilangan positif",
+  };
 }
