@@ -5,7 +5,7 @@ import Database from "@ioc:Adonis/Lucid/Database";
 export default class GenresController {
   public async index({ response }: HttpContextContract) {
     try {
-      let genre = await Database.query().select("*").from("genres");
+      let genre = await Database.query().select("id", "name").from("genres");
       response
         .status(200)
         .json({ message: "Berhasil mengambil semua data Genres", data: genre });
@@ -34,13 +34,19 @@ export default class GenresController {
 
   public async show({ response, params }: HttpContextContract) {
     try {
-      let genre = await Database.from("genres")
-        .where("id", params.id)
-        .select("id", "name")
-        .firstOrFail();
-      response.ok({
-        message: "Berhasil ambil data Genre berdasarkan id!",
-        data: genre,
+      let id = params.id;
+      const genre = await Database.query()
+        .select("*")
+        .from("genres")
+        .where("id", id);
+      const movie = await Database.query()
+        .select("id", "title", "release_date", "resume")
+        .from("movies")
+        .where("genre_id", id);
+      return response.status(200).json({
+        id: genre[0].id,
+        name: genre[0].name,
+        movies: movie,
       });
     } catch (error) {
       response.notFound({ message: "Genre tidak ditemukan!" });
