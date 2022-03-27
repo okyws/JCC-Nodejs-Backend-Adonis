@@ -38,8 +38,9 @@ export default class MoviesController {
   public async show({ response, params }: HttpContextContract) {
     try {
       let movie = await Database.from("movies")
-        .where("id", params.id)
-        .select("id", "title", "resume", "release_date", "genre_id")
+        .where("movies.id", params.id)
+        .select("movies.id", "title", "resume", "release_date", "genres.name as genre")
+        .join('genres', 'genres.id', 'genre_id')
         .firstOrFail();
       response.ok({
         message: "Berhasil ambil data Movie berdasarkan id!",
