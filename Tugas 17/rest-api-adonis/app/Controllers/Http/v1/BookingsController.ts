@@ -170,7 +170,7 @@ export default class BookingsController {
 
         let newBooking = await booking.save();
         response.created({
-          message: "berhasil menambahkan data booking baru",
+          message: "berhasil booking",
           data: newBooking,
         });
       }

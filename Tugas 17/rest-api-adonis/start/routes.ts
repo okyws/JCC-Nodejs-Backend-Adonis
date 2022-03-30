@@ -40,6 +40,7 @@ Route.post("/login", "v1/AuthController.login").as("auth.login");
 Route.post("/fields/:id/bookings", "v1/BookingsController.addBooking").as(
   "add Booking"
 ).middleware("auth");
+Route.get('/fields/:id', 'v1/FieldsController.getFields').as('Fields by Id').middleware('auth')
 
 /**jika route 1 per 1
 Route.post('/venue', 'v1/VenuesController.store').as('venue.store');

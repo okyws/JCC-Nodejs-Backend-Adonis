@@ -15,7 +15,7 @@ export default class Booking extends BaseModel {
   public users: BelongsTo<typeof User>;
 
   @hasMany(() => User, {
-    foreignKey: "id"
+    foreignKey: "booking_user_id"
   })
   public bookings: HasMany<typeof User>
 
