@@ -35,6 +35,10 @@ Route.post("/register", "v1/AuthController.register").as("auth.register");
 Route.post("/login", "v1/AuthController.login").as("auth.login");
 Route.post("/booking", "v1/BookingsController.saveBooking").as("add Booking");
 
+Route.resource("/fields.booking", "v1/BookingsController")
+  .apiOnly()
+  .middleware({ "*": ["auth"] });
+
 /**jika route 1 per 1
 Route.post('/venue', 'v1/VenuesController.store').as('venue.store');
 Route.get('/venue', 'v1/VenuesController.index').as('venue.index');

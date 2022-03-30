@@ -7,6 +7,7 @@ export default class Venue extends BaseModel {
     foreignKey: "venue_id",
   })
   public fields: HasMany<typeof Field>;
+  
   @column({ isPrimary: true })
   public id: number;
 

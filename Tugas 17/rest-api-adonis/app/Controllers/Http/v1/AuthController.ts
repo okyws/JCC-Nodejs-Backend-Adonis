@@ -5,8 +5,8 @@ import { schema } from "@ioc:Adonis/Core/Validator";
 
 export default class AuthController {
   public async register({ request, response }: HttpContextContract) {
+    const data = await request.validate(UserValidator);
     try {
-      const data = await request.validate(UserValidator);
       User.create(data);
 
       return response.created({ message: "Registrasi berhasil!" });

@@ -66,7 +66,7 @@ export default class FieldsController {
       // }
 
       let venue_id = params.venue_id;
-      let venue = await Venue.findBy("id", venue_id);
+      let venue = await Venue.findByOrFail("id", venue_id);
       if (venue) {
         const field = await Venue.query()
           .preload("fields")
@@ -94,8 +94,8 @@ export default class FieldsController {
       }
     } catch (error) {
       response.badRequest({
-        // erorrs: error.message,
-        message: "gagal memuat data Arena!",
+        erorrs: error.message,
+        message: "gagal memuat data Arena, Arena tidak ditemukan!",
       });
     }
   }
@@ -128,8 +128,8 @@ export default class FieldsController {
     await request.validate(FieldCreateValidator);
     try {
       let venue_id = params.venue_id;
-      let field = await Field.findByOrFail("venue_id", venue_id);
-      if (field) {
+      let fields = await Field.findByOrFail("venue_id", venue_id);
+      if (fields) {
         let field = new Field();
         field.name = request.input("name");
         field.type = request.input("type");
@@ -187,9 +187,10 @@ export default class FieldsController {
 
       const field = await Field.query()
         .preload("venues")
+        // .preload("")
         .where("id", id)
         .andWhere("venue_id", venue_id)
-        .select("id", "name", "type", "venue_id")
+        .select("*")
         .firstOrFail();
       return response.status(200).json({
         message: "Berhasil ambil data Arena berdasarkan id!",
