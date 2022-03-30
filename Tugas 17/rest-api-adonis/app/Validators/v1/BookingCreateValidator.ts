@@ -24,12 +24,12 @@ export default class BookingCreateValidator {
    *    ```
    */
   public schema = schema.create({
-    field_id: schema.number([
-      rules.unsigned(),
-    ]),
-    booking_user_id: schema.number([
-      rules.unsigned(),
-    ]),
+    // field_id: schema.number([
+    //   rules.unsigned(),
+    // ]),
+    // booking_user_id: schema.number([
+    //   rules.unsigned(),
+    // ]),
     players_count: schema.number([
       rules.unsigned(),
     ]),
@@ -73,12 +73,12 @@ export default class BookingCreateValidator {
    *
    */
   public messages = {
-    'field_id.required': 'Id Arena harus diisi!',
-    'field_id.number':'Id Arena harus berupa angka',
-    'field_id.unsigned':'Id Arena harus berupa bilangan positif',
-    'booking_user_id.required': 'User Id harus diisi!',
-    'booking_user_id.number':'User Id harus berupa angka',
-    'booking_user_id.unsigned':'User Id harus berupa bilangan positif',
+    // 'field_id.required': 'Id Arena harus diisi!',
+    // 'field_id.number':'Id Arena harus berupa angka',
+    // 'field_id.unsigned':'Id Arena harus berupa bilangan positif',
+    // 'booking_user_id.required': 'User Id harus diisi!',
+    // 'booking_user_id.number':'User Id harus berupa angka',
+    // 'booking_user_id.unsigned':'User Id harus berupa bilangan positif',
     'players_count.required': 'Jumlah pemain harus diisi!',
     'players_count.number':'Jumlah pemain harus berupa angka',
     'players_count.unsigned':'Jumlah pemain harus berupa bilangan positif',

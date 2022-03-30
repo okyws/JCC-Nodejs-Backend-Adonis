@@ -25,12 +25,11 @@ export default class BookingsController {
         let id = request.qs().players_count;
         let idField = params.field_id;
 
-
         const booking = await Booking.query()
           .where("players_count", id)
           .andWhere("field_id", idField)
-          .select("*")
-          // .firstOrFail();
+          .select("*");
+        // .firstOrFail();
 
         response.status(200).json({
           message: "filter data booking berdasarkan id",
@@ -152,6 +151,33 @@ export default class BookingsController {
       response.notFound({
         erorrs: error.message,
         message: "data tidak ditemukan!",
+      });
+    }
+  }
+
+  public async addBooking({ request, response, params, auth }: HttpContextContract) {
+    await request.validate(BookingCreateValidator);
+    try {
+      let idField: number = params.id;
+      let bookings = await Field.findByOrFail("id", idField);
+      if (bookings) {
+        let booking = new Booking();
+        booking.field_id = request.input("field_id", idField);
+        booking.booking_user_id = request.input("booking_user_id", auth.user?.id);
+        booking.players_count = request.input("players_count");
+        booking.play_date_start = request.input("play_date_end");
+        booking.play_date_end = request.input("play_date_end");
+
+        let newBooking = await booking.save();
+        response.created({
+          message: "berhasil menambahkan data booking baru",
+          data: newBooking,
+        });
+      }
+    } catch (error) {
+      response.unprocessableEntity({
+        message: "gagal mem-booking Arena!",
+        errors: error.message,
       });
     }
   }
