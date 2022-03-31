@@ -4,35 +4,20 @@ import Booking from "App/Models/Booking";
 import Field from "App/Models/Field";
 
 export default class BookingsController {
-  public async index({ request, response, params }: HttpContextContract) {
+  public async index({ response, params }: HttpContextContract) {
     try {
       let id = params.field_id;
-      let Book = await Booking.findByOrFail("field_id", id);
+      let field = await Field.findByOrFail("id", id);
 
-      if (Book) {
+      if (field) {
         const booking = await Booking.query()
-          // .preload("fields")
+          .preload("fields")
           // .preload("bookings")
           .where("field_id", id)
           .select("*");
         // .firstOrFail();
         response.status(200).json({
           message: "Berhasil mengambil semua data booking",
-          data: booking,
-        });
-      }
-      if (request.qs().players_count) {
-        let id = request.qs().players_count;
-        let idField = params.field_id;
-
-        const booking = await Booking.query()
-          .where("players_count", id)
-          .andWhere("field_id", idField)
-          .select("*");
-        // .firstOrFail();
-
-        response.status(200).json({
-          message: "filter data booking berdasarkan id",
           data: booking,
         });
       }
@@ -44,23 +29,27 @@ export default class BookingsController {
     }
   }
 
-  public async store({ request, response, params }: HttpContextContract) {
-    await request.validate(BookingCreateValidator);
+  public async store({ request, response, params, auth }: HttpContextContract) {
+    let payload = await request.validate(BookingCreateValidator);
     try {
-      let id = params.field_id;
-      let bookings = await Field.findByOrFail("id", id);
-      if (bookings) {
+      let id: number = parseInt(params.field_id);
+      let field = await Field.findByOrFail("id", id);
+      let user = auth.user!;
+      if (field) {
         let booking = new Booking();
-        booking.field_id = request.input("field_id");
-        booking.booking_user_id = request.input("booking_user_id");
-        booking.players_count = request.input("players_count");
-        booking.play_date_start = request.input("play_date_end");
-        booking.play_date_end = request.input("play_date_end");
+        booking.fieldId = request.input("field_id", id);
+        booking.userId = request.input("user_id", user.id);
+        booking.playDateStart = payload.play_date_start;
+        booking.playDateEnd = payload.play_date_end;
 
-        let newBooking = await booking.save();
+        // let newBooking = await booking.save();
+        // booking.related("fields").associate(field)
+        // booking.related("users").associate(user)
+        user.related("players").save(booking);
+
         response.created({
           message: "berhasil menambahkan data booking baru",
-          data: newBooking,
+          data: booking,
         });
       }
     } catch (error) {
@@ -73,30 +62,41 @@ export default class BookingsController {
 
   public async show({ response, params }: HttpContextContract) {
     try {
-      let id = params.id;
-      let field_id = params.field_id;
+      // let id = params.id;
+      // let field_id = params.field_id;
+
+      // const booking = await Booking.query()
+      //   // .preload("fields")
+      //   // .preload("users")
+      //   // .preload("bookings")
+      //   .where("id", id)
+      //   /**
+      //    * route fields/:id/booking/:id
+      //    * pakai ini
+      //    * .andWhere("field_id", field_id)
+      //    *
+      //    * route booking/:id
+      //    * hapus ini
+      //    * .andWhere("field_id", field_id)
+      //    * */
+      //   .andWhere("field_id", field_id)
+      //   .select("*")
+      //   .firstOrFail();
+      // return response.status(200).json({
+      //   message: "Berhasil ambil data Booking berdasarkan id!",
+      //   data: booking,
+      // });
 
       const booking = await Booking.query()
-        // .preload("fields")
-        // .preload("users")
-        // .preload("bookings")
-        .where("id", id)
-        /**
-         * route fields/:id/booking/:id
-         * pakai ini
-         * .andWhere("field_id", field_id)
-         *
-         * route booking/:id
-         * hapus ini
-         * .andWhere("field_id", field_id)
-         * */
-        .andWhere("field_id", field_id)
-        .select("*")
-        .firstOrFail();
-      return response.status(200).json({
-        message: "Berhasil ambil data Booking berdasarkan id!",
-        data: booking,
-      });
+        .where("id", params.id)
+        .preload("players", (userQuery) => {
+          userQuery
+            .select(["name", "email", "id"])
+            .withCount("players")
+            // .firstOrFail();
+        });
+
+        return response.ok({ status: 'success', data: booking})
     } catch (error) {
       response.notFound({
         erorrs: error.message,
@@ -109,7 +109,7 @@ export default class BookingsController {
     await request.validate(BookingCreateValidator);
     try {
       let id = params.id;
-      let field_id = params.field_id;
+      let field_id: number = params.field_id;
 
       let booking = await Booking.query()
         .where("id", id)
@@ -119,11 +119,10 @@ export default class BookingsController {
 
       await booking
         .merge({
-          field_id: request.input("field_id"),
-          booking_user_id: request.input("booking_user_id"),
-          players_count: request.input("players_count"),
-          play_date_start: request.input("play_date_end"),
-          play_date_end: request.input("play_date_end"),
+          fieldId: request.input("field_id", field_id),
+          userId: request.input("user_id"),
+          playDateStart: request.input("play_date_start"),
+          playDateEnd: request.input("play_date_end"),
         })
         .save();
       response.ok({
@@ -155,29 +154,18 @@ export default class BookingsController {
     }
   }
 
-  public async addBooking({ request, response, params, auth }: HttpContextContract) {
-    await request.validate(BookingCreateValidator);
+  public async join({ response, auth, params }: HttpContextContract) {
     try {
-      let idField: number = params.id;
-      let bookings = await Field.findByOrFail("id", idField);
-      if (bookings) {
-        let booking = new Booking();
-        booking.field_id = request.input("field_id", idField);
-        booking.booking_user_id = request.input("booking_user_id", auth.user?.id);
-        booking.players_count = request.input("players_count");
-        booking.play_date_start = request.input("play_date_end");
-        booking.play_date_end = request.input("play_date_end");
+      const booking = await Booking.findByOrFail("id", params.id);
+      let user = auth.user!;
 
-        let newBooking = await booking.save();
-        response.created({
-          message: "berhasil booking",
-          data: newBooking,
-        });
-      }
+      let data = await booking?.related("players").sync([user.id]);
+
+      response.ok({ message: "berhasil join booking", data: data });
     } catch (error) {
-      response.unprocessableEntity({
-        message: "gagal mem-booking Arena!",
-        errors: error.message,
+      response.notFound({
+        erorrs: error.message,
+        message: "data tidak ditemukan!",
       });
     }
   }

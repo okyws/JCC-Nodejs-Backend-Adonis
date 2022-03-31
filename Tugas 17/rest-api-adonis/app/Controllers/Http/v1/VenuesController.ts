@@ -7,6 +7,7 @@ import VenueCreateValidator from "App/Validators/v1/VenueCreateValidator";
 
 // import model for ORM
 import Venue from "App/Models/Venue";
+import Field from "App/Models/Field";
 
 export default class VenuesController {
   public async index({ request, response }: HttpContextContract) {
@@ -52,7 +53,7 @@ export default class VenuesController {
     }
   }
 
-  public async store({ request, response, auth }: HttpContextContract) {
+  public async store({ request, response }: HttpContextContract) {
     /** use query builder
     await request.validate(VenueCreateValidator);
     try {
@@ -74,22 +75,28 @@ export default class VenuesController {
      */
 
     // use ORM
-    await request.validate(VenueCreateValidator);
+    const payload = await request.validate(VenueCreateValidator);
     try {
+      /** cara 1 
       let venue = new Venue();
       venue.name = request.input("name");
       venue.address = request.input("address");
       venue.phone = request.input("phone");
 
       let newVenue = await venue.save();
-
-      /** cek user yang sedang login 
+      
+      cek user yang sedang login 
         const userId = auth.user?.id
         console.log("user id: ", userId);
       */
 
-      const userId = auth.user?.id;
-      console.log("user id: ", userId);
+      // cara 2
+      const newVenue = await Venue.create({
+        name: payload.name,
+        address: payload.address,
+        phone: payload.phone,
+      });
+
       response.created({
         message: "Venue berhasil dibuat!",
         data: newVenue,
@@ -102,7 +109,7 @@ export default class VenuesController {
     }
   }
 
-  public async show({ response, params }: HttpContextContract) {
+  public async show({ response, params, request }: HttpContextContract) {
     /** use query builder
     try {
       let venue = await Database.from("venues")
@@ -139,17 +146,33 @@ export default class VenuesController {
       //   data: venue,
       // });
 
-      let venue = await Venue.findBy("id", params.id);
-      if (venue) {
-        const field = await Venue.query()
-          .where("id", params.id)
-          // .andWhere("venue_id", params.venue_id)
-          .select("id", "name", "address", "phone")
-          .preload("fields")
-          .firstOrFail();
+      const venue = await Venue.query()
+        .where("id", params.id)
+        // .andWhere("venue_id", params.venue_id)
+        .select("*")
+        .preload("fields")
+        .firstOrFail();
+      response.status(200).json({
+        message: "berhasil get data venue by id",
+        data: venue,
+      });
+
+      if (request.qs().type) {
+        let type = request.qs().type;
+
+        const venue = await Venue.query()
+        .where("id", params.id)
+        // .andWhere("venue_id", params.venue_id)
+        .select("id", "name", "address", "phone")
+        // .preload("fields")
+        .firstOrFail();
+
+        let field = await Field.query()
+          .where("venue_id", params.id)
+          .andWhere("type", type);
         response.status(200).json({
-          message: "berhasil get data venue by id",
-          data: field,
+          message: "filter data berdasarkan type",
+          data: venue, filter: field,
         });
       }
     } catch (error) {
@@ -183,23 +206,28 @@ export default class VenuesController {
     await request.validate(VenueCreateValidator);
     try {
       let id = params.id;
-      let venue = await Venue.findByOrFail("id", id);
-      /** cara 1
-      venue.name = request.input("name");
-      venue.address = request.input("address");
-      venue.phone = request.input("phone");
-      venue.save();
-      */
+      let update = await Venue.findByOrFail("id", id);
+      // /** cara 1
+      // venue.name = request.input("name");
+      // venue.address = request.input("address");
+      // venue.phone = request.input("phone");
+      // venue.save();
+      // */
 
-      // cara 2
-      await venue
+      // // cara 2
+      await update
         .merge({
           name: request.input("name"),
           address: request.input("address"),
           phone: request.input("phone"),
         })
         .save();
-      response.ok({ message: "data berhasil di update!", data: venue });
+
+      // // cara dari video
+      // const payload = await request.validate(VenueCreateValidator);
+      // let update = await Venue.updateOrCreate({ id: params.id }, payload);
+
+      response.ok({ message: "data berhasil di update!", data: update });
     } catch (error) {
       response.notFound({ message: "data tidak ditemukan!" });
     }

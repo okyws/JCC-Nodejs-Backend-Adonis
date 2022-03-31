@@ -40,7 +40,7 @@ export default class UserValidator {
         column: "email",
       }),
     ]),
-    password: schema.string({}, [rules.minLength(6), rules.maxLength(32)]),
+    password: schema.string({}, [rules.minLength(6), rules.maxLength(32), rules.confirmed()]),
   });
 
   /**

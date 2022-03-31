@@ -1,45 +1,53 @@
 import { DateTime } from "luxon";
-import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from "@ioc:Adonis/Lucid/Orm";
-import Field from "./Field";
-import User from "./User";
+import {
+  BaseModel,
+  BelongsTo,
+  belongsTo,
+  column,
+  computed,
+  ManyToMany,
+  manyToMany,
+} from "@ioc:Adonis/Lucid/Orm";
+import Field from "App/Models/Field";
+import User from "App/Models/User";
 
 export default class Booking extends BaseModel {
-  @belongsTo(() => Field, {
-    foreignKey: "field_id",
-  })
-  public fields: BelongsTo<typeof Field>;
-  
-  @belongsTo(() => User, {
-    foreignKey: "booking_user_id",
-  })
-  public users: BelongsTo<typeof User>;
-
-  @hasMany(() => User, {
-    foreignKey: "booking_user_id"
-  })
-  public bookings: HasMany<typeof User>
+  // public serializeExtras = true
 
   @column({ isPrimary: true })
   public id: number;
 
   @column()
-  public field_id: number;
+  public fieldId: number;
 
   @column()
-  public booking_user_id: number;
-
-  @column()
-  public players_count: number;
+  public userId: number;
 
   @column.dateTime()
-  public play_date_start: DateTime;
+  public playDateStart: DateTime;
 
   @column.dateTime()
-  public play_date_end: DateTime;
+  public playDateEnd: DateTime;
 
   @column.dateTime({ autoCreate: true, serializeAs: null })
   public createdAt: DateTime;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
   public updatedAt: DateTime;
+
+  @belongsTo(() => Field)
+  public fields: BelongsTo<typeof Field>;
+
+  @belongsTo(() => User)
+  public user: BelongsTo<typeof User>;
+
+  @manyToMany(() => User, {
+    pivotTable: 'schedules'
+  })
+  public players: ManyToMany<typeof User>;
+
+  @computed()
+  public get players_count() {
+    return this.players.length
+  }
 }

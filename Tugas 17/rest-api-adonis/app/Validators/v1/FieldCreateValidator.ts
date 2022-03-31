@@ -30,9 +30,9 @@ export default class FieldCreateValidator {
     type: schema.enum(
       ['futsal', 'mini soccer', 'basketball'] as const
     ),
-    venue_id: schema.number([
-      rules.unsigned(),
-    ])
+    // venue_id: schema.number([
+    //   rules.unsigned(),
+    // ])
   });
 
   /**
@@ -50,7 +50,7 @@ export default class FieldCreateValidator {
     'name.required': 'Nama harus diisi!',
     'name.maxLength': 'Nama tidak boleh lebih dari 20 huruf',
     'type.required': 'Type harus diisi!',
-    'venue_id.required': 'Id Venue harus diisi!',
-    'venue_id.unsigned': 'Id Venue harus bilangan positif'
+    // 'venue_id.required': 'Id Venue harus diisi!',
+    // 'venue_id.unsigned': 'Id Venue harus bilangan positif'
   };
 }

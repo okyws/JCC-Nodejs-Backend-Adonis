@@ -7,7 +7,6 @@ import FieldCreateValidator from "App/Validators/v1/FieldCreateValidator";
 // import model for ORM
 import Field from "App/Models/Field";
 import Venue from "App/Models/Venue";
-import Booking from "App/Models/Booking";
 
 export default class FieldsController {
   public async index({ response, params }: HttpContextContract) {
@@ -128,18 +127,18 @@ export default class FieldsController {
     // use ORM
     await request.validate(FieldCreateValidator);
     try {
-      let venue_id = params.venue_id;
-      let fields = await Field.findByOrFail("venue_id", venue_id);
-      if (fields) {
+      let id = params.venue_id;
+      let venue = await Venue.findByOrFail("id", id);
+      if (venue) {
         let field = new Field();
         field.name = request.input("name");
         field.type = request.input("type");
-        field.venue_id = request.input("venue_id");
+        field.venue_id = request.input("venue_id", id);
+        await field.related("venues").associate(venue);
 
-        let newField = await field.save();
         response.created({
           message: "berhasil menambahkan data field baru",
-          data: newField,
+          data: field,
         });
       }
     } catch (error) {
@@ -184,14 +183,31 @@ export default class FieldsController {
 
       // cara 2 (tampilkan venuenya juga)
       let id = params.id;
-      let venue_id = params.venue_id;
+      // let venue_id = params.venue_id;
+
+      // const field = await Field.query()
+      //   .preload("venues")
+      //   // .preload("")
+      //   .where("id", id)
+      //   .andWhere("venue_id", venue_id)
+      //   .select("*")
+      //   .firstOrFail();
 
       const field = await Field.query()
-        .preload("venues")
-        // .preload("")
         .where("id", id)
-        .andWhere("venue_id", venue_id)
-        .select("*")
+        .select(["id", "name", "type", "venue_id"])
+        .preload("venues", (venueQuery) => {
+          venueQuery.select(["name", "address", "phone"]);
+        })
+        .preload("bookings", (bookingQuery) => {
+          bookingQuery.select([
+            "id",
+            "field_id",
+            "play_date_start",
+            "play_date_end",
+            "user_id",
+          ]);
+        })
         .firstOrFail();
       return response.status(200).json({
         message: "Berhasil ambil data Arena berdasarkan id!",
@@ -248,7 +264,7 @@ export default class FieldsController {
         .merge({
           name: request.input("name"),
           type: request.input("type"),
-          venue_id: request.input("venue_id"),
+          venue_id: request.input("venue_id", venue_id),
         })
         .save();
       response.ok({ message: "Arena berhasil di update!", data: field });
@@ -299,24 +315,4 @@ export default class FieldsController {
     }
   }
 
-  public async getFields({ response, params }: HttpContextContract) {
-    try {
-      let id = params.id;
-      const field = await Field.query()
-        .preload("venues")
-        .preload("bookings")
-        .where("id", id)
-        .select("*")
-        .firstOrFail();
-      return response.status(200).json({
-        message: "berhasil get data booking!",
-        data: field,
-      });
-    } catch (error) {
-      response.notFound({
-        erorrs: error.message,
-        message: "data tidak ditemukan!",
-      });
-    }
-  }
 }

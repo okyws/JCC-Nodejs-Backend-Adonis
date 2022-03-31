@@ -9,20 +9,19 @@ export default class Bookings extends BaseSchema {
       table
         .integer("field_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("fields")
-        .notNullable()
         .onDelete("CASCADE");
       table.dateTime("play_date_start").notNullable();
       table.dateTime("play_date_end").notNullable();
       table
-        .integer("booking_user_id")
+        .integer("user_id")
         .unsigned()
         .notNullable()
         .references("id")
         .inTable("users")
         .onDelete("CASCADE");
-      table.integer("players_count").notNullable().unsigned();
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

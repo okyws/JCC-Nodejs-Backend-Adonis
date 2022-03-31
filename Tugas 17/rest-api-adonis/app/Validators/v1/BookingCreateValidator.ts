@@ -27,12 +27,12 @@ export default class BookingCreateValidator {
     // field_id: schema.number([
     //   rules.unsigned(),
     // ]),
-    // booking_user_id: schema.number([
+    // user_id: schema.number([
     //   rules.unsigned(),
     // ]),
-    players_count: schema.number([
-      rules.unsigned(),
-    ]),
+    // players_count: schema.number([
+    //   rules.unsigned(),
+    // ]),
     play_date_start: schema.date(
       {
         format: "yyyy-MM-dd HH:mm:ss",
@@ -44,7 +44,7 @@ export default class BookingCreateValidator {
          * 2022-03-28
          * */
       },
-      [rules.after('today')]
+      [rules.beforeField("play_date_end"), rules.after("today")]
     ),
     play_date_end: schema.date(
       {
@@ -57,7 +57,7 @@ export default class BookingCreateValidator {
          * 2022-03-28
          * */
       },
-      [rules.afterField('play_date_start')]
+      [rules.afterField("play_date_start")]
     ),
   });
 
@@ -76,17 +76,25 @@ export default class BookingCreateValidator {
     // 'field_id.required': 'Id Arena harus diisi!',
     // 'field_id.number':'Id Arena harus berupa angka',
     // 'field_id.unsigned':'Id Arena harus berupa bilangan positif',
-    // 'booking_user_id.required': 'User Id harus diisi!',
-    // 'booking_user_id.number':'User Id harus berupa angka',
-    // 'booking_user_id.unsigned':'User Id harus berupa bilangan positif',
-    'players_count.required': 'Jumlah pemain harus diisi!',
-    'players_count.number':'Jumlah pemain harus berupa angka',
-    'players_count.unsigned':'Jumlah pemain harus berupa bilangan positif',
-    'play_date_start.required': 'Tanggal Main harus diisi! (format: "yyyy-MM-dd HH:mm:ss")',
-    'play_date_start.after': 'Tanggal Main minimal 1 hari sebelum!',
-    'play_date_start.date.format': 'Tanggal harus sesuai format yyyy-MM-dd HH:mm:ss',
-    'play_date_end.required': 'Tanggal Main harus diisi! (format: "yyyy-MM-dd HH:mm:ss")',
-    'play_date_end.after': 'Tanggal Main minimal 1 hari sebelum!',
-    'play_date_end.date.format': 'Tanggal harus sesuai format yyyy-MM-dd HH:mm:ss',
+    // 'user_id.required': 'User Id harus diisi!',
+    // 'user_id.number':'User Id harus berupa angka',
+    // 'user_id.unsigned':'User Id harus berupa bilangan positif',
+    // 'players_count.required': 'Jumlah pemain harus diisi!',
+    // 'players_count.number':'Jumlah pemain harus berupa angka',
+    // 'players_count.unsigned':'Jumlah pemain harus berupa bilangan positif',
+    "play_date_start.required":
+      'Tanggal Main harus diisi! (format: "yyyy-MM-dd HH:mm:ss")',
+    "play_date_start.after": "Tanggal Main minimal 1 hari sebelum!",
+    "play_date_start.date.format":
+      "Tanggal harus sesuai format yyyy-MM-dd HH:mm:ss",
+    "play_date_start.beforeField":
+      "Waktu main tidak boleh sama dengan waktu selesai, dan tidak boleh sama dengan setelah waktu selesai!",
+    "play_date_end.required":
+      'Tanggal Main harus diisi! (format: "yyyy-MM-dd HH:mm:ss")',
+    "play_date_end.after": "Tanggal selesai minimal 1 hari sebelum!",
+    "play_date_end.date.format":
+      "Tanggal harus sesuai format yyyy-MM-dd HH:mm:ss",
+    "play_date_end.afterField":
+      "Waktu selesai tidak boleh sama dengan waktu main, dan tidak boleh sama dengan sebelum waktu main!",
   };
 }

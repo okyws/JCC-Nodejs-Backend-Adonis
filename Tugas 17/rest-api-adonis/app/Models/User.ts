@@ -7,14 +7,9 @@ import {
   hasMany,
   HasMany,
 } from "@ioc:Adonis/Lucid/Orm";
-import Booking from "./Booking";
+import Booking from "App/Models/Booking";
 
 export default class User extends BaseModel {
-  @hasMany(() => Booking, {
-    foreignKey: "booking_user_id",
-  })
-  public fields: HasMany<typeof Booking>;
-
   @column({ isPrimary: true })
   public id: number;
 
@@ -42,4 +37,7 @@ export default class User extends BaseModel {
       user.password = await Hash.make(user.password);
     }
   }
+
+  @hasMany(() => Booking)
+  public players: HasMany<typeof Booking>;
 }

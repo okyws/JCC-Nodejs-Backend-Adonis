@@ -7,11 +7,25 @@ export default class AuthController {
   public async register({ request, response }: HttpContextContract) {
     const data = await request.validate(UserValidator);
     try {
+      /** cara 1 
       User.create(data);
 
       return response.created({ message: "Registrasi berhasil!" });
+      */
+
+      // cara 2
+      const newUser = await User.create({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
+      response.created({
+        message: "Registrasi berhasil!",
+        data: newUser,
+      });
     } catch (error) {
-      return response.unprocessableEntity({ messages: error.message });
+      response.unprocessableEntity({ messages: error.message });
     }
   }
 
@@ -36,17 +50,15 @@ export default class AuthController {
 
     // Cara 2
     try {
-      const usersSchema = schema.create({
-        email: schema.string(),
-        password: schema.string(),
+      const loginSchema = schema.create({
+        email: schema.string({ trim: true }),
+        password: schema.string({ trim: true }),
       });
-      await request.validate({ schema: usersSchema });
-      const email = request.input("email");
-      const password = request.input("password");
+      const payload =  await request.validate({ schema: loginSchema });
+      
+      const token = await auth.use("api").attempt(payload.email, payload.password);
 
-      const token = await auth.use("api").attempt(email, password);
-
-      return response.ok({ message: "Login Berhasil", token });
+      return response.ok({ message: "Login Berhasil", data: token });
     } catch (error) {
       if (error.guard) {
         return response.unprocessableEntity({

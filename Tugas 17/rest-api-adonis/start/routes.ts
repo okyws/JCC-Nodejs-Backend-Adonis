@@ -24,24 +24,66 @@ Route.get("/", async () => {
   return { hello: "world" };
 });
 
+// cara group route
+// http://127.0.0.1:3333/api/v1/{endpoint disini}
+
+Route.group(() => {
+  Route.resource("/venue", "v1/VenuesController")
+    .apiOnly()
+    .middleware({ "*": ["auth"] });
+  Route.resource("/venue.fields", "v1/FieldsController")
+    .apiOnly()
+    .middleware({ "*": ["auth"] });
+  Route.resource("/fields.booking", "v1/BookingsController")
+    .apiOnly()
+    .middleware({ "*": ["auth"] });
+
+  Route.group(() => {
+    Route.post("/register", "v1/AuthController.register").as("auth.register");
+    Route.post("/login", "v1/AuthController.login").as("auth.login");
+  });
+
+  Route.group(() => {
+    Route.post("/fields/:id/bookings", "v1/BookingsController.addBooking")
+      .as("booking.add")
+      .middleware("auth");
+    Route.get("/fields/:id", "v1/FieldsController.show")
+      .as("field.show(id)")
+      .middleware("auth");
+    Route.get("/bookings/:id", "v1/BookingsController.show")
+      .as("booking.get")
+      .middleware("auth");
+    Route.put("/bookings/:id", "v1/BookingsController.join")
+      .as("booking.join")
+      .middleware("auth");
+  }).as('tugas17');
+}).prefix("api/v1");
+
 // cara simpel untuk route
-Route.resource("/venue", "v1/VenuesController")
-  .apiOnly()
-  .middleware({ "*": ["auth"] });
-Route.resource("/venue.fields", "v1/FieldsController")
-  .apiOnly()
-  .middleware({ "*": ["auth"] });
-Route.resource("/fields.booking", "v1/BookingsController")
-  .apiOnly()
-  .middleware({ "*": ["auth"] });
+// Route.resource("/venue", "v1/VenuesController")
+//   .apiOnly()
+//   .middleware({ "*": ["auth"] });
+// Route.resource("/venue.fields", "v1/FieldsController")
+//   .apiOnly()
+//   .middleware({ "*": ["auth"] });
+// Route.resource("/fields.booking", "v1/BookingsController")
+//   .apiOnly()
+//   .middleware({ "*": ["auth"] });
 
-Route.post("/register", "v1/AuthController.register").as("auth.register");
-Route.post("/login", "v1/AuthController.login").as("auth.login");
-Route.post("/fields/:id/bookings", "v1/BookingsController.addBooking").as(
-  "add Booking"
-).middleware("auth");
-Route.get('/fields/:id', 'v1/FieldsController.getFields').as('Fields by Id').middleware('auth')
-
+// Route.post("/register", "v1/AuthController.register").as("auth.register");
+// Route.post("/login", "v1/AuthController.login").as("auth.login");
+// Route.post("/fields/:id/bookings", "v1/BookingsController.addBooking")
+//   .as("add Booking")
+//   .middleware("auth");
+// Route.get("/fields/:id", "v1/FieldsController.getFields")
+//   .as("Fields by Id")
+//   .middleware("auth");
+// Route.get("/bookings/:id", "v1/BookingsController.getBook")
+//   .as("get Booking")
+//   .middleware("auth");
+// Route.post("/bookings/:id", "v1/BookingsController.addBook")
+//   .as("post Booking")
+//   .middleware("auth");
 /**jika route 1 per 1
 Route.post('/venue', 'v1/VenuesController.store').as('venue.store');
 Route.get('/venue', 'v1/VenuesController.index').as('venue.index');
