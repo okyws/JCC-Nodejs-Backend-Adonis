@@ -47,10 +47,10 @@ Route.group(() => {
     Route.post("/fields/:id/bookings", "v1/BookingsController.addBooking")
       .as("booking.add")
       .middleware("auth");
-    Route.get("/fields/:id", "v1/FieldsController.show")
+    Route.get("/fields/:id", "v1/FieldsController.showBooking")
       .as("field.show(id)")
       .middleware("auth");
-    Route.get("/bookings/:id", "v1/BookingsController.show")
+    Route.get("/bookings/:id", "v1/BookingsController.showBookingDetail")
       .as("booking.get")
       .middleware("auth");
     Route.put("/bookings/:id", "v1/BookingsController.join")

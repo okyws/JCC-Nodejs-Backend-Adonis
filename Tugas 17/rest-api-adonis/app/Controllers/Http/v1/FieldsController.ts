@@ -181,38 +181,43 @@ export default class FieldsController {
       //   data: fields,
       // });
 
-      // cara 2 (tampilkan venuenya juga)
       let id = params.id;
-      // let venue_id = params.venue_id;
+      let venue = await Venue.findByOrFail("id", params.venue_id);
+      if (venue) {
+        // cara 2 (tampilkan venuenya juga)
+        // let venue_id = params.venue_id;
 
-      // const field = await Field.query()
-      //   .preload("venues")
-      //   // .preload("")
-      //   .where("id", id)
-      //   .andWhere("venue_id", venue_id)
-      //   .select("*")
-      //   .firstOrFail();
+        // const field = await Field.query()
+        //   .preload("venues")
+        //   // .preload("")
+        //   .where("id", id)
+        //   .andWhere("venue_id", venue_id)
+        //   .select("*")
+        //   .firstOrFail();
 
-      const field = await Field.query()
-        .where("id", id)
-        .select(["id", "name", "type", "venue_id"])
-        .preload("venues", (venueQuery) => {
-          venueQuery.select(["name", "address", "phone"]);
-        })
-        .preload("bookings", (bookingQuery) => {
-          bookingQuery.select([
-            "id",
-            "field_id",
-            "play_date_start",
-            "play_date_end",
-            "user_id",
-          ]);
-        })
-        .firstOrFail();
-      return response.status(200).json({
-        message: "Berhasil ambil data Arena berdasarkan id!",
-        data: field,
-      });
+        const field = await Field.query()
+          .where("id", id)
+          .andWhere("venue_id", params.venue_id)
+          .select(["id", "name", "type", "venue_id"])
+          .preload("venues", (venueQuery) => {
+            venueQuery.select(["name", "address", "phone"]);
+          })
+          .preload("bookings", (bookingQuery) => {
+            bookingQuery.select([
+              "id",
+              "field_id",
+              "play_date_start",
+              "play_date_end",
+              "user_id",
+            ]);
+          })
+          .firstOrFail();
+          field.$extras.players_count
+        return response.status(200).json({
+          message: "Berhasil ambil data Arena berdasarkan id!",
+          data: field,
+        });
+      }
     } catch (error) {
       response.notFound({
         erorrs: error.message,
@@ -315,4 +320,79 @@ export default class FieldsController {
     }
   }
 
+  public async showBooking({ response, params }: HttpContextContract) {
+    // try {
+    //   let field = await Database.from("fields")
+    //     .where("id", params.id)
+    //     .andWhere("venue_id", params.venue_id)
+    //     .select("id", "name", "type", "venue_id")
+    //     .firstOrFail();
+    //   response.ok({
+    //     message: "Berhasil ambil data Arena berdasarkan id!",
+    //     data: field,
+    //   });
+    // } catch (error) {
+    //   response.notFound({
+    //     erorrs: error.message,
+    //     message: "Arena tidak ditemukan!",
+    //   });
+    // }
+
+    // use ORM
+    try {
+      // let id = params.id;
+      // let venue_id = params.venue_id;
+      // const fields = await Field.query()
+      //   .where("fields.id", id)
+      //   .andWhere("venue_id", venue_id)
+      //   .select("*")
+      //   .firstOrFail();
+      // return response.status(200).json({
+      //   message: "Berhasil ambil data Arena berdasarkan id!",
+      //   data: fields,
+      // });
+
+      let id = params.id;
+      // let venue = await Venue.findByOrFail("id", id);
+      // if (venue) {
+        // cara 2 (tampilkan venuenya juga)
+        // let venue_id = params.venue_id;
+
+        // const field = await Field.query()
+        //   .preload("venues")
+        //   // .preload("")
+        //   .where("id", id)
+        //   .andWhere("venue_id", venue_id)
+        //   .select("*")
+        //   .firstOrFail();
+
+        const field = await Field.query()
+          .where("id", id)
+          .select(["id", "name", "type", "venue_id"])
+          .preload("venues", (venueQuery) => {
+            venueQuery.select(["name", "address", "phone"]);
+          })
+          .preload("bookings", (bookingQuery) => {
+            bookingQuery.select([
+              "id",
+              "field_id",
+              "play_date_start",
+              "play_date_end",
+              "user_id",
+            ])
+            bookingQuery.withCount("players").preload("players");
+          })
+          .firstOrFail();
+        return response.status(200).json({
+          message: "Berhasil ambil data Arena berdasarkan id!",
+          data: field,
+        });
+      // }
+    } catch (error) {
+      response.notFound({
+        erorrs: error.message,
+        message: "Arena tidak ditemukan!",
+      });
+    }
+  }
 }

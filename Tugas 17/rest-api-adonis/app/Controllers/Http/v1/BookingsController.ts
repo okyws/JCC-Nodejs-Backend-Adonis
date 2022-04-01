@@ -7,20 +7,34 @@ export default class BookingsController {
   public async index({ response, params }: HttpContextContract) {
     try {
       let id = params.field_id;
-      let field = await Field.findByOrFail("id", id);
+      // let field = await Field.findByOrFail("id", id);
 
-      if (field) {
-        const booking = await Booking.query()
-          .preload("fields")
-          // .preload("bookings")
-          .where("field_id", id)
-          .select("*");
-        // .firstOrFail();
-        response.status(200).json({
-          message: "Berhasil mengambil semua data booking",
-          data: booking,
+      // if (field) {
+      //   const booking = await Booking.query()
+      //     .preload("fields")
+      //     // .preload("bookings")
+      //     .where("field_id", id)
+      //     .select("*");
+      //   // .firstOrFail();
+      //   response.status(200).json({
+      //     message: "Berhasil mengambil semua data booking",
+      //     data: booking,
+      //   });
+      // }
+
+      const booking = await Booking.query()
+        .where("field_id", id).withCount("players")
+        .preload("fields", (fieldQuery) => {
+          fieldQuery.preload("venues")
+        })
+        .preload("players", (userQuery) => {
+          userQuery.select("*");
+          // .firstOrFail();
         });
-      }
+      response.status(200).json({
+        message: "Berhasil mengambil semua data booking",
+        data: booking,
+      });
     } catch (error) {
       response.badRequest({
         message: "Gagal memuat data Booking",
@@ -62,8 +76,8 @@ export default class BookingsController {
 
   public async show({ response, params }: HttpContextContract) {
     try {
-      // let id = params.id;
-      // let field_id = params.field_id;
+      let id = params.id;
+      let field_id = params.field_id;
 
       // const booking = await Booking.query()
       //   // .preload("fields")
@@ -87,16 +101,20 @@ export default class BookingsController {
       //   data: booking,
       // });
 
-      const booking = await Booking.query()
-        .where("id", params.id)
-        .preload("players", (userQuery) => {
-          userQuery
-            .select(["name", "email", "id"])
-            .withCount("players")
-            // .firstOrFail();
-        });
+      let field = await Field.findByOrFail("id", id);
 
-        return response.ok({ status: 'success', data: booking})
+      if(field) {
+        const booking = await Booking.query()
+          .where("id", params.id)
+          .andWhere("field_id", field_id).withCount("players")
+          .preload("players", (userQuery) => {
+            userQuery.select(["name", "email", "id"])
+          })
+          .firstOrFail();
+  
+        response.ok({ status: "success", data: booking });
+      }
+
     } catch (error) {
       response.notFound({
         erorrs: error.message,
@@ -105,22 +123,26 @@ export default class BookingsController {
     }
   }
 
-  public async update({ request, response, params }: HttpContextContract) {
+  public async update({ request, response, params, auth }: HttpContextContract) {
     await request.validate(BookingCreateValidator);
     try {
       let id = params.id;
-      let field_id: number = params.field_id;
+      let field_id = params.field_id;
 
       let booking = await Booking.query()
         .where("id", id)
         .andWhere("field_id", field_id)
         .select("*")
+        .preload("players", (userQuery) => {
+          userQuery.select(["name", "email", "id"]).withCount("players");
+          // .firstOrFail();
+        })
         .firstOrFail();
 
       await booking
         .merge({
-          fieldId: request.input("field_id", field_id),
-          userId: request.input("user_id"),
+          fieldId: request.input("field_id", parseInt(params.field_id)),
+          userId: request.input("user_id", auth.user?.id),
           playDateStart: request.input("play_date_start"),
           playDateEnd: request.input("play_date_end"),
         })
@@ -166,6 +188,49 @@ export default class BookingsController {
       response.notFound({
         erorrs: error.message,
         message: "data tidak ditemukan!",
+      });
+    }
+  }
+
+  public async showBookingDetail({ response, params }: HttpContextContract) {
+    try {
+      // let id = params.id;
+      // let field_id = params.field_id;
+
+      // const booking = await Booking.query()
+      //   // .preload("fields")
+      //   // .preload("users")
+      //   // .preload("bookings")
+      //   .where("id", id)
+      //   /**
+      //    * route fields/:id/booking/:id
+      //    * pakai ini
+      //    * .andWhere("field_id", field_id)
+      //    *
+      //    * route booking/:id
+      //    * hapus ini
+      //    * .andWhere("field_id", field_id)
+      //    * */
+      //   .andWhere("field_id", field_id)
+      //   .select("*")
+      //   .firstOrFail();
+      // return response.status(200).json({
+      //   message: "Berhasil ambil data Booking berdasarkan id!",
+      //   data: booking,
+      // });
+
+      const booking = await Booking.query()
+        .where("id", params.id).withCount("players")
+        .preload("players", (userQuery) => {
+          userQuery.select(["name", "email", "id"]);
+          // .firstOrFail();
+        });
+
+      return response.ok({ status: "success", data: booking });
+    } catch (error) {
+      response.notFound({
+        erorrs: error.message,
+        message: "Booking tidak ditemukan!",
       });
     }
   }
