@@ -25,6 +25,9 @@ export default class User extends BaseModel {
   @column()
   public isVerified: boolean
 
+  @column()
+  public role: string
+
   @column({ serializeAs: null })
   public rememberMeToken?: string;
 

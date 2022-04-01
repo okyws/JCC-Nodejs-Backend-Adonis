@@ -150,7 +150,9 @@ export default class VenuesController {
         .where("id", params.id)
         // .andWhere("venue_id", params.venue_id)
         .select("*")
-        .preload("fields")
+        .preload("fields", (fieldQuery) => {
+          fieldQuery.preload("bookings")
+        })
         .firstOrFail();
       response.status(200).json({
         message: "berhasil get data venue by id",

@@ -41,5 +41,8 @@ Server.middleware.register([
 |
 */
 Server.middleware.registerNamed({
-  auth: () => import('App/Middleware/Auth')
+  auth: () => import('App/Middleware/Auth'),
+  verify: () => import('App/Middleware/Verify'),
+  owner: () => import('App/Middleware/Owner'),
+  user: () => import('App/Middleware/User'),
 })

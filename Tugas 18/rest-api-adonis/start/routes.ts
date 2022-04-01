@@ -30,13 +30,13 @@ Route.get("/", async () => {
 Route.group(() => {
   Route.resource("/venue", "v1/VenuesController")
     .apiOnly()
-    .middleware({ "*": ["auth"] });
+    .middleware({ "*": ["auth", "owner", "verify"] });
   Route.resource("/venue.fields", "v1/FieldsController")
     .apiOnly()
-    .middleware({ "*": ["auth"] });
+    .middleware({ "*": ["auth", "owner", "verify"] });
   Route.resource("/fields.booking", "v1/BookingsController")
     .apiOnly()
-    .middleware({ "*": ["auth"] });
+    .middleware({ "*": ["auth", "owner", "verify"] });
 
   Route.group(() => {
     Route.post("/register", "v1/AuthController.register").as("auth.register");
@@ -46,16 +46,16 @@ Route.group(() => {
   Route.group(() => {
     Route.post("/fields/:id/bookings", "v1/BookingsController.addBooking")
       .as("booking.add")
-      .middleware("auth");
+      .middleware(["auth", "user", "verify"]);
     Route.get("/fields/:id", "v1/FieldsController.showBooking")
       .as("field.show(id)")
-      .middleware("auth");
+      .middleware(["auth", "owner", "verify"]);
     Route.get("/bookings/:id", "v1/BookingsController.showBookingDetail")
       .as("booking.get")
-      .middleware("auth");
+      .middleware(["auth", "owner", "verify"]);
     Route.put("/bookings/:id", "v1/BookingsController.join")
       .as("booking.join")
-      .middleware(["auth"]);
+      .middleware(["auth", "user", "verify"]);
     /** tidak pakai cukup 1 metode saja di v1/BookingsController.join
     Route.put("/bookings/:id/unjoin", "v1/BookingsController.unjoin")
       .as("booking.unjoin")

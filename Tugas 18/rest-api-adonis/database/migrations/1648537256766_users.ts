@@ -9,6 +9,11 @@ export default class UsersSchema extends BaseSchema {
       table.string("name", 30).notNullable();
       table.string("email", 255).notNullable();
       table.string("password", 180).notNullable();
+      table.boolean("is_verified").defaultTo(false);
+      table
+        .enum("role", ["admin", "owner", "user"])
+        .notNullable()
+        .defaultTo("user");
       table.string("remember_me_token").nullable();
 
       /**

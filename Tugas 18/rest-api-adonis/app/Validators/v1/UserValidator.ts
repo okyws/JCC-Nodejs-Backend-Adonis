@@ -40,7 +40,12 @@ export default class UserValidator {
         column: "email",
       }),
     ]),
-    password: schema.string({}, [rules.minLength(6), rules.maxLength(32), rules.confirmed()]),
+    role: schema.enum(["owner", "user"]),
+    password: schema.string({}, [
+      rules.minLength(6),
+      rules.maxLength(32),
+      rules.confirmed(),
+    ]),
   });
 
   /**
@@ -65,5 +70,6 @@ export default class UserValidator {
     "password.required": "Password harus di isi!",
     "password.minLength": "Password minimal 6 huruf",
     "password.maxLength": "Nama tidak boleh lebih dari 32 huruf",
+    'role.required': 'Role harus diisi!',
   };
 }

@@ -20,6 +20,7 @@ export default class AuthController {
         name: data.name,
         email: data.email,
         password: data.password,
+        role: data.role,
       });
 
       let otp_code: number = Math.floor(100000 + Math.random() * 90000);
