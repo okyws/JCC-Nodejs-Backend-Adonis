@@ -4,7 +4,6 @@ import {
   BelongsTo,
   belongsTo,
   column,
-  // computed,
   ManyToMany,
   manyToMany,
 } from "@ioc:Adonis/Lucid/Orm";
@@ -12,7 +11,7 @@ import Field from "App/Models/Field";
 import User from "App/Models/User";
 
 export default class Booking extends BaseModel {
-  public serializeExtras = true
+  public serializeExtras = true;
 
   @column({ isPrimary: true })
   public id: number;
@@ -42,12 +41,7 @@ export default class Booking extends BaseModel {
   public user: BelongsTo<typeof User>;
 
   @manyToMany(() => User, {
-    pivotTable: 'schedules'
+    pivotTable: "schedules",
   })
   public players: ManyToMany<typeof User>;
-
-  // @computed()
-  // public get players_count() {
-  //   return this.players.length
-  // }
 }

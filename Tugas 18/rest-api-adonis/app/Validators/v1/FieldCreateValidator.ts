@@ -24,12 +24,8 @@ export default class FieldCreateValidator {
    *    ```
    */
   public schema = schema.create({
-    name: schema.string({}, [
-      rules.maxLength(20),
-    ]),
-    type: schema.enum(
-      ['futsal', 'mini soccer', 'basketball'] as const
-    ),
+    name: schema.string({}, [rules.maxLength(20)]),
+    type: schema.enum(["futsal", "mini soccer", "basketball"]),
     // venue_id: schema.number([
     //   rules.unsigned(),
     // ])
@@ -47,9 +43,9 @@ export default class FieldCreateValidator {
    *
    */
   public messages = {
-    'name.required': 'Nama harus diisi!',
-    'name.maxLength': 'Nama tidak boleh lebih dari 20 huruf',
-    'type.required': 'Type harus diisi!',
+    "name.required": "Nama harus diisi!",
+    "name.maxLength": "Nama tidak boleh lebih dari 20 huruf",
+    "type.required": "Type harus diisi!",
     // 'venue_id.required': 'Id Venue harus diisi!',
     // 'venue_id.unsigned': 'Id Venue harus bilangan positif'
   };

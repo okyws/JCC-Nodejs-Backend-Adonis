@@ -29,14 +29,6 @@ export default class Field extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
   public updatedAt: DateTime;
 
-  /** cara 1 untuk menghubugkan dengan key yang ditentukan 
-  @belongsTo(() => Venue, {
-    foreignKey: 'venue_id'
-  })
-  public venues: BelongsTo<typeof Venue>
-  */
-
-  // cara 2 tanpa key
   @belongsTo(() => Venue, {
     foreignKey: "venue_id",
   })
