@@ -8,7 +8,7 @@ export default class Fields extends BaseSchema {
       table.increments("id").primary();
       table.string("name").notNullable();
       table
-        .enum("type", ["futsal", "mini soccer", "basketball"])
+        .enum("type", ["soccer", "minisoccer", "futsal", "basketball", "volleyball"])
         .notNullable()
         .defaultTo("futsal");
       table

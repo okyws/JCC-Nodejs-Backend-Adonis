@@ -22,11 +22,14 @@ export default class Booking extends BaseModel {
   @column()
   public userId: number;
 
-  @column.dateTime()
-  public playDateStart: DateTime;
+  @column.date()
+  public date_booking: DateTime;
 
   @column.dateTime()
-  public playDateEnd: DateTime;
+  public time_start: DateTime;
+
+  @column.dateTime()
+  public time_end: DateTime;
 
   @column.dateTime({ autoCreate: true, serializeAs: null })
   public createdAt: DateTime;
@@ -44,4 +47,5 @@ export default class Booking extends BaseModel {
     pivotTable: "schedules",
   })
   public players: ManyToMany<typeof User>;
+  booking: DateTime;
 }

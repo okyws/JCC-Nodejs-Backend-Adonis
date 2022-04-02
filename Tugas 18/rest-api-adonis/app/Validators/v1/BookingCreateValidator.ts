@@ -33,20 +33,13 @@ export default class BookingCreateValidator {
     // players_count: schema.number([
     //   rules.unsigned(),
     // ]),
-    play_date_start: schema.date(
+    date_booking: schema.date(
       {
-        format: "yyyy-MM-dd HH:mm:ss",
-        /**
-         * sample value date "yyyy-MM-dd HH:mm:ss"
-         * 2022-03-28 08:30:00
-         *
-         * sample value date "yyyy-MM-dd"
-         * 2022-03-28
-         * */
+        format: "yyyy-MM-dd",
       },
-      [rules.beforeField("play_date_end"), rules.after("today")]
+      [rules.after("today")]
     ),
-    play_date_end: schema.date(
+    time_start: schema.date(
       {
         format: "yyyy-MM-dd HH:mm:ss",
         /**
@@ -57,7 +50,20 @@ export default class BookingCreateValidator {
          * 2022-03-28
          * */
       },
-      [rules.afterField("play_date_start")]
+      [rules.beforeField("time_end")]
+    ),
+    time_end: schema.date(
+      {
+        format: "yyyy-MM-dd HH:mm:ss",
+        /**
+         * sample value date "yyyy-MM-dd HH:mm:ss"
+         * 2022-03-28 08:30:00
+         *
+         * sample value date "yyyy-MM-dd"
+         * 2022-03-28
+         * */
+      },
+      [rules.afterField("time_start")]
     ),
   });
 
@@ -82,19 +88,17 @@ export default class BookingCreateValidator {
     // 'players_count.required': 'Jumlah pemain harus diisi!',
     // 'players_count.number':'Jumlah pemain harus berupa angka',
     // 'players_count.unsigned':'Jumlah pemain harus berupa bilangan positif',
-    "play_date_start.required":
+    "date_booking.required":
       'Tanggal Main harus diisi! (format: "yyyy-MM-dd HH:mm:ss")',
-    "play_date_start.after": "Tanggal Main minimal 1 hari sebelum!",
-    "play_date_start.date.format":
-      "Tanggal harus sesuai format yyyy-MM-dd HH:mm:ss",
-    "play_date_start.beforeField":
-      "Waktu main tidak boleh sama dengan waktu selesai, dan tidak boleh sama dengan setelah waktu selesai!",
-    "play_date_end.required":
-      'Tanggal Main harus diisi! (format: "yyyy-MM-dd HH:mm:ss")',
-    "play_date_end.after": "Tanggal selesai minimal 1 hari sebelum!",
-    "play_date_end.date.format":
-      "Tanggal harus sesuai format yyyy-MM-dd HH:mm:ss",
-    "play_date_end.afterField":
-      "Waktu selesai tidak boleh sama dengan waktu main, dan tidak boleh sama dengan sebelum waktu main!",
+    "date_booking.after": "Tanggal Main minimal 1 hari sebelum!",
+    "date_booking.date.format": "Tanggal harus sesuai format yyyy-MM-dd",
+    "time_start.required": 'Tanggal Main harus diisi! (format: "HH:mm:ss")',
+    "time_start.date.format": "Tanggal harus sesuai format HH:mm:ss",
+    "time_start.beforeField":
+      "Waktu main tidak boleh sama dengan waktu selesai",
+    "time_end.required":
+      'Waktu berakhir harus diisi! (format: "yyyy-MM-dd HH:mm:ss")',
+    "time_end.date.format": "Tanggal harus sesuai format HH:mm:ss",
+    "time_end.afterField": "Waktu selesai tidak boleh sama dengan waktu main",
   };
 }

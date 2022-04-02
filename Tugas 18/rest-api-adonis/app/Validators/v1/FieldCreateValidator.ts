@@ -25,7 +25,7 @@ export default class FieldCreateValidator {
    */
   public schema = schema.create({
     name: schema.string({}, [rules.maxLength(20)]),
-    type: schema.enum(["futsal", "mini soccer", "basketball"]),
+    type: schema.enum(["soccer", "minisoccer", "futsal", "basketball", "volleyball"]),
     // venue_id: schema.number([
     //   rules.unsigned(),
     // ])

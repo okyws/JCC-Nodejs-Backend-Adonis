@@ -67,11 +67,7 @@ export default class FieldsController {
           })
           .preload("bookings", (bookingQuery) => {
             bookingQuery.select([
-              "id",
-              "field_id",
-              "play_date_start",
-              "play_date_end",
-              "user_id",
+              "*"
             ]);
           })
           .firstOrFail();
@@ -145,11 +141,7 @@ export default class FieldsController {
         })
         .preload("bookings", (bookingQuery) => {
           bookingQuery.select([
-            "id",
-            "field_id",
-            "play_date_start",
-            "play_date_end",
-            "user_id",
+            "*"
           ]);
           bookingQuery.withCount("players").preload("players");
         })

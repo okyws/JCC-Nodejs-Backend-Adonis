@@ -8,7 +8,7 @@ export default class Venue extends BaseModel {
   })
   public fields: HasMany<typeof Field>;
 
-  @column({ isPrimary: true, serializeAs: null })
+  @column({ isPrimary: true })
   public id: number;
 
   @column()

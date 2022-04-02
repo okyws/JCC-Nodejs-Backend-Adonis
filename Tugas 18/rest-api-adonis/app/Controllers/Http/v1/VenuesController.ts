@@ -6,7 +6,6 @@ import Field from "App/Models/Field";
 
 export default class VenuesController {
   public async index({ request, response }: HttpContextContract) {
-    
     try {
       let venue = await Venue.all();
       if (venue) {
@@ -56,36 +55,57 @@ export default class VenuesController {
 
   public async show({ response, params, request }: HttpContextContract) {
     try {
-      const venue = await Venue.query()
-        .where("id", params.id)
-        .select("*")
-        .preload("fields", (fieldQuery) => {
-          fieldQuery.preload("bookings")
-        })
-        .firstOrFail();
+      const today = new Date();
+      const date =
+        today.getFullYear() +
+        "-" +
+        (today.getMonth() + 1) +
+        "-" +
+        today.getDate();
+
+      const venue = await Venue.findByOrFail("id", params.id);
+
+      const field = await Field.query()
+        .where("venue_id", params.id)
+        .preload("bookings", (qBooking) => {
+          qBooking
+            .where("date_booking", date)
+            // .preload("players")
+            .withCount("players");
+        });
+
       response.status(200).json({
+        status: "success",
         message: "berhasil get data venue by id",
         data: venue,
+        detail: field,
       });
 
       if (request.qs().type) {
-        let type = request.qs().type;
-
-        const venue = await Venue.query()
-        .where("id", params.id)
-        .select("id", "name", "address", "phone")
-        .firstOrFail();
-
-        let field = await Field.query()
+        const type = request.qs().type;
+      
+        const venue = await Venue.findByOrFail("id", params.id);
+        const field = await Field.query()
           .where("venue_id", params.id)
-          .andWhere("type", type);
+          .andWhere("type", type)
+          .preload("bookings", (qBooking) => {
+            qBooking
+              .where("date_booking", date)
+              // .preload("players")
+              .withCount("players");
+          });
+
         response.status(200).json({
           message: "filter data berdasarkan type",
-          data: venue, filter: field,
+          data: venue, filter: field
         });
       }
     } catch (error) {
-      response.notFound({ message: "data tidak ditemukan!" });
+      response.notFound({
+        status: "success",
+        message: "data tidak ditemukan!",
+        error: error.message,
+      });
     }
   }
 
@@ -94,7 +114,7 @@ export default class VenuesController {
     try {
       let id = params.id;
       let update = await Venue.findByOrFail("id", id);
-      
+
       await update
         .merge({
           name: request.input("name"),

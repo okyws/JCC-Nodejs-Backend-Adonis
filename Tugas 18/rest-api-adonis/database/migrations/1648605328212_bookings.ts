@@ -13,8 +13,9 @@ export default class Bookings extends BaseSchema {
         .references("id")
         .inTable("fields")
         .onDelete("CASCADE");
-      table.dateTime("play_date_start").notNullable();
-      table.dateTime("play_date_end").notNullable();
+      table.date("date_booking").notNullable();
+      table.time("time_start").notNullable();
+      table.time("time_end").notNullable();
       table
         .integer("user_id")
         .unsigned()

@@ -33,7 +33,7 @@ Route.group(() => {
     .middleware({ "*": ["auth", "owner", "verify"] });
   Route.resource("/fields.booking", "v1/BookingsController")
     .apiOnly()
-    .middleware({ "*": ["auth", "owner", "verify"] });
+    .middleware({ "*": ["auth", "user", "verify"] });
 
   Route.group(() => {
     Route.post("/register", "v1/AuthController.register").as("auth.register");
@@ -57,4 +57,8 @@ Route.group(() => {
       "auth.verify"
     );
   }).as("tugas17");
-}).prefix("api/v1");
+
+  Route.get("/hello", "v1/TestsController.hello").as("test.hello");
+})
+  .prefix("api/v1")
+  .as("apiv1");

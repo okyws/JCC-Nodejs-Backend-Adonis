@@ -43,8 +43,9 @@ export default class BookingsController {
         let booking = new Booking();
         booking.fieldId = request.input("field_id", id);
         booking.userId = request.input("user_id", user.id);
-        booking.playDateStart = payload.play_date_start;
-        booking.playDateEnd = payload.play_date_end;
+        booking.date_booking = payload.date_booking;
+        booking.time_start = payload.time_start;
+        booking.time_end = payload.time_end;
 
         user.related("players").save(booking);
 
@@ -112,8 +113,9 @@ export default class BookingsController {
         .merge({
           fieldId: request.input("field_id", parseInt(params.field_id)),
           userId: request.input("user_id", auth.user?.id),
-          playDateStart: request.input("play_date_start"),
-          playDateEnd: request.input("play_date_end"),
+          date_booking: request.input("date_booking"),
+          time_start: request.input("time_start"),
+          time_end: request.input("time_end"),
         })
         .save();
       response.ok({
@@ -194,8 +196,9 @@ export default class BookingsController {
         let booking = new Booking();
         booking.fieldId = request.input("field_id", params.id);
         booking.userId = request.input("user_id", user.id);
-        booking.playDateStart = payload.play_date_start;
-        booking.playDateEnd = payload.play_date_end;
+        booking.date_booking = payload.date_booking;
+        booking.time_start = payload.time_start;
+        booking.time_end = payload.time_end;
 
         user.related("players").save(booking);
 
